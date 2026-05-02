@@ -1,0 +1,31 @@
+.others {
+    top: 400px;
+    position: absolute;
+    height: 100%;
+    width: 115px;
+    background:  blue;
+}
+
+.btn-success, .btn-primary {
+    left: 0;
+    right: 0;
+    margin: auto;
+    display: block !important;
+    width: 90%;
+    margin-top: 5px;
+}
+
+.btn-disable {
+    background : rgb(0,0,100) !important;
+}
+
+#blocklyDiv {
+    height: 100vh;
+}
+
+#qrcode {
+    display: block;
+    position: relative;
+    left: 0;
+    top: 0;
+}

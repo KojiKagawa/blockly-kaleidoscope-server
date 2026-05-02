@@ -1,0 +1,14 @@
+{
+  "name": "blockly-kaleidoscope-server",
+  "version": "1.0.0",
+  "description": "HTTPS server for blockly-kaleidoscope",
+  "main": "app.js",
+  "scripts": {
+    "start": "node --max-http-header-size=81920 app.js"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "express": "^4.21.2"
+  }
+}

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>My Custom Blocks - Blockly</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/overwrite.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
+    crossorigin="anonymous">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="./js/jquery-3.3.1.min.js"></script>
+    <script src="./js/jquery.qrcode.min.js"></script>
+    <script src="./js/quaternion.js"></script>
+    <script src="./js/color.js"></script>
+    <script src="./js/acorn_interpreter.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap.native/2.0.15/bootstrap-native-v4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/google/blockly@latest/blockly_compressed.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/google/blockly@latest/blocks_compressed.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/google/blockly@latest/javascript_compressed.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/google/blockly@latest/msg/js/ja.js"></script>
+    <script src="./js/Utilities/device.js"></script>
+    <script src="./js/Utilities/utilities.js"></script>
+    <script src="./js/Utilities/canvasUtil.js"></script>
+    <script src="./js/blocks/color_change.js"></script>
+    <script src="./js/blocks/color_change_block.js"></script>
+    <script src="./js/blocks/draw_shape.js"></script>
+    <script src="./js/blocks/draw_shape_block.js"></script>
+    <script src="./js/blocks/draw_style.js"></script>
+    <script src="./js/blocks/draw_style_block.js"></script>
+    <script src="./js/blocks/draw_text.js"></script>
+    <script src="./js/blocks/draw_text_block.js"></script>
+    <script src="./js/blocks/system_others.js"></script>
+    <script src="./js/blocks/system_others_block.js"></script>
+    <script src="./js/blocks/system_animation.js"></script>
+    <script src="./js/blocks/system_animation_block.js"></script>
+    <script src="./js/blocks/system_canvas.js"></script>
+    <script src="./js/blocks/system_canvas_block.js"></script>
+    <script src="./js/blocks/system_cencer.js"></script>
+    <script src="./js/blocks/system_cencer_block.js"></script>
+    <script src="./js/blocks/system_return.js"></script>
+    <script src="./js/blocks/system_return_block.js"></script>
+    <script src="./js/turtle.js"></script>
+    <script src="./js/blocks/Turtle.js"></script>
+    <script src="./js/blocks/Turtle_block.js"></script>
+
+    <script src="./js/blocks/test_average.js"></script>
+    <script src="./js/blocks/test_average_block.js"></script>
+
+    <script src="./js/blocks/affine_transformation_x.js"></script>
+    <script src="./js/blocks/affine_transformation_x_block.js"></script>
+
+    <script src="./js/blocks/affine_transformation_y.js"></script>
+    <script src="./js/blocks/affine_transformation_y_block.js"></script>
+
+    <script src="./js/blocks/draw_square.js"></script>
+    <script src="./js/blocks/draw_square_block.js"></script>
+
+    <script src="./js/blocks/line_symmetry.js"></script>
+    <script src="./js/blocks/line_symmetry_block.js"></script>
+
+    <script src="./js/blocks/draw_kaleidoscope.js"></script>
+    <script src="./js/blocks/draw_kaleidoscope_block.js"></script>
+    <script src="./js/blocks/draw_kaleidoscope2.js"></script>
+    <script src="./js/blocks/draw_kaleidoscope2_block.js"></script>
+
+    <script src="./js/blocks/define_variable_function.js"></script>
+    <script src="./js/blocks/define_variable_function_block.js"></script>
+
+    <script src="./js/blocks/clear_context.js"></script>
+    <script src="./js/blocks/clear_context_block.js"></script>
+
+    <script src="./js/blocks/reset_count.js"></script>
+    <script src="./js/blocks/reset_count_block.js"></script>
+
+    <script src="./js/blocks/create_windowsize_canvas.js"></script>
+    <script src="./js/blocks/create_windowsize_canvas_block.js"></script>
+
+    <script src="./js/blocks/draw_mirror.js"></script>
+    <script src="./js/blocks/draw_mirror_block.js"></script>
+
+    <script src="./js/blocks/save_orientation_list.js"></script>
+    <script src="./js/blocks/save_orientation_list_block.js"></script>
+
+    <script src="./js/blocks/draw_loop.js"></script>
+    <script src="./js/blocks/draw_loop_block.js"></script>
+
+    <script src="./js/blocks/select_clear.js"></script>
+    <script src="./js/blocks/select_clear_block.js"></script>
+
+    <script src="./js/blocks/change_hsv.js"></script>
+    <script src="./js/blocks/change_hsv_block.js"></script>
+
+    <script src="./js/workspace.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-8" id="blocklyDiv">
+
+            </div>
+            <div class="col-4">
+                <pre><code class="JavaSciprt" id='jsCode'></code></pre>
+            </div>
+        </div>
+    </div>
+    <div id="qrcode"></div>
+    <image id="img"></image>
+</body>
+
+</html>
+
+
+<!--
+- system_animation
+アニメーションブレイク
+アニメーションループ
+
+- system_others
+平均値
+スリープ
+
+- system_canvas
+キャンバス動作
+コンテキスト
+キャンバス生成削除
+
+- system_senser
+センサー加速度角度速度変位
+センサー消去
+センサセットアップ
+
+センサ返却
+キャンバス返却
+-->

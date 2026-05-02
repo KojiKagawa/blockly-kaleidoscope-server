@@ -1,0 +1,28 @@
+#jsCode {
+    min-height: 400px !important;
+}
+
+.row {
+    margin-right: 0 !important;
+    margin-left : 0 !important;
+}
+
+.col-8, .col-4 {
+    padding-right: 0 !important;
+    padding-left:  0 !important;
+}
+
+.blocklyToolboxDiv {
+    height: 400px !important;
+    width:  115px !important;
+}
+
+.container {
+    max-width: none !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+xml {
+    display: none;
+}
