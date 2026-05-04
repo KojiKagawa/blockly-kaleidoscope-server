@@ -22,11 +22,11 @@ app.use(bodyParser.json({ extended: true, limit: "5mb" }));
 
 const PORT = Number(process.env.PORT || 3810);
 
-const CERT_DIR = process.env.CERT_DIR || path.resolve(__dirname, "pubkey");
+// const CERT_DIR = process.env.CERT_DIR || path.resolve(__dirname, "pubkey");
 
 const options = {
-  key: fs.readFileSync(path.join(CERT_DIR, "key.pem")),
-  cert: fs.readFileSync(path.join(CERT_DIR, "cert.pem")),
+  // key: fs.readFileSync(path.join(CERT_DIR, "key.pem")),
+  // cert: fs.readFileSync(path.join(CERT_DIR, "cert.pem")),
 };
 
 const server = https.createServer(options, app);
