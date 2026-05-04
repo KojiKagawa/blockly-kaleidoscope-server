@@ -1,15 +1,27 @@
 const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 const fs = require("fs");
 const https = require("https");
 
 const app = express();
+
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN || "*",
+  methods: process.env.CORS_METHODS || "GET,POST,OPTIONS",
+  allowedHeaders:
+    process.env.CORS_ALLOWED_HEADERS || "Content-Type,Authorization",
+  optionsSuccessStatus: 204,
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 app.use(bodyParser.urlencoded({ extended: true, limit: "5mb" }));
 app.use(bodyParser.json({ extended: true, limit: "5mb" }));
 
-const PORT = Number(process.env.PORT || 3010);
-const PUBLIC_ROOT = process.env.PUBLIC_ROOT || path.resolve(__dirname, "public");
+const PORT = Number(process.env.PORT || 3810);
+
 const CERT_DIR = process.env.CERT_DIR || path.resolve(__dirname, "pubkey");
 
 const options = {
@@ -27,7 +39,6 @@ server.on("clientError", (err, socket) => {
 
 var listener = server.listen(PORT, () => {
   console.log("Running at Port " + listener.address().port + "...");
-  console.log("Serving static files from " + PUBLIC_ROOT);
 });
 
 var programList = {};
@@ -71,7 +82,6 @@ app.post("/smartview/finishaccept", (req, res, next) => {
   res.json({ ok: true });
 });
 
-app.use(express.static(PUBLIC_ROOT));
 
 app.use((req, res) => {
   res.sendStatus(404);
