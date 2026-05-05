@@ -3,6 +3,7 @@ const path = require("path");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const fs = require("fs");
+const http = require("http");
 const https = require("https");
 
 const app = express();
@@ -21,6 +22,7 @@ app.use(bodyParser.urlencoded({ extended: true, limit: "5mb" }));
 app.use(bodyParser.json({ extended: true, limit: "5mb" }));
 
 const PORT = Number(process.env.PORT || 3810);
+const HTTP_PORT = Number(process.env.HTTP_PORT || 3800);
 
 // const CERT_DIR = process.env.CERT_DIR || path.resolve(__dirname, "pubkey");
 
@@ -38,7 +40,12 @@ server.on("clientError", (err, socket) => {
 });
 
 var listener = server.listen(PORT, () => {
-  console.log("Running at Port " + listener.address().port + "...");
+  console.log("HTTPS running at Port " + listener.address().port + "...");
+});
+
+const httpServer = http.createServer(app);
+var httpListener = httpServer.listen(HTTP_PORT, () => {
+  console.log("HTTP running at Port " + httpListener.address().port + "...");
 });
 
 var programList = {};
