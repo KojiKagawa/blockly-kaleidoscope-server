@@ -5,6 +5,7 @@ const cors = require("cors");
 const fs = require("fs");
 const http = require("http");
 const https = require("https");
+const os = require("os");
 
 const app = express();
 
@@ -24,6 +25,22 @@ app.use(bodyParser.json({ extended: true, limit: "5mb" }));
 const PORT = Number(process.env.PORT || 3810);
 const HTTP_PORT = Number(process.env.HTTP_PORT || 3800);
 
+// Get local IP address
+function getLocalIPAddress() {
+  const interfaces = os.networkInterfaces();
+  for (const name of Object.keys(interfaces)) {
+    for (const iface of interfaces[name]) {
+      // Skip internal and non-IPv4 addresses
+      if (iface.family === "IPv4" && !iface.internal) {
+        return iface.address;
+      }
+    }
+  }
+  return "localhost";
+}
+
+const localIP = getLocalIPAddress();
+
 // const CERT_DIR = process.env.CERT_DIR || path.resolve(__dirname, "pubkey");
 
 const options = {
@@ -39,18 +56,24 @@ server.on("clientError", (err, socket) => {
   socket.end("HTTP/1.1 400 Bad Request\r\n\r\n");
 });
 
-var listener = server.listen(PORT, () => {
-  console.log("HTTPS running at Port " + listener.address().port + "...");
+const listener = server.listen(PORT, () => {
+  console.log(`🌐 Server is running!`);
+  console.log(`📍 Local IP Address: ${localIP}`);
+  console.log(`🔒 HTTPS running at https://${localIP}:${PORT}/`);
+  console.log(`🔒 HTTPS running at https://${listener.address().address}:${listener.address().port}/...`);
 });
 
 const httpServer = http.createServer(app);
-var httpListener = httpServer.listen(HTTP_PORT, () => {
-  console.log("HTTP running at Port " + httpListener.address().port + "...");
+const httpListener = httpServer.listen(HTTP_PORT, () => {
+  console.log(`🌐 HTTP Server is running!`);
+  console.log(`📍 Local IP Address: ${localIP}`);
+  console.log(`HTTP running at http://${localIP}:${HTTP_PORT}/`);
+  console.log(`HTTP running at http://${httpListener.address().address}:${httpListener.address().port}/...`);
 });
 
-var programList = {};
-var responseList = {};
-var idnum = 1;
+const programList = {};
+const responseList = {};
+let idnum = 1;
 
 app.get("/getid", (req, res, next) => {
   let myid = 0;
@@ -60,27 +83,27 @@ app.get("/getid", (req, res, next) => {
 });
 
 app.get("/dataset", (req, res, next) => {
-  let id = req.query.id;
-  let program = req.query.program;
+  const id = req.query.id;
+  const program = req.query.program;
   console.log(id, program);
   programList[id] = program;
   res.json({ ok: true });
 });
 
 app.get("/smartview/dataget", (req, res, next) => {
-  let id = req.query.id;
+  const id = req.query.id;
   console.log(id);
   res.json({ prog: programList[id] });
 });
 
 app.get("/startaccept", (req, res, next) => {
-  let id = req.query.id;
+  const id = req.query.id;
   console.log("startaccept!");
   responseList[id] = res;
 });
 
 app.post("/smartview/finishaccept", (req, res, next) => {
-  let id = req.body.id;
+  const id = req.body.id;
   console.log("finishaccept!");
   console.log(id);
   if (responseList[id]) {
