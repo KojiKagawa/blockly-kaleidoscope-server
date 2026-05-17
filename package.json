@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "HTTPS server for blockly-kaleidoscope",
   "main": "app.js",
+  "_comment_startup_examples": [
+    "PowerShell: $env:STATIC_PROXY_URL='https://example-static-host/'; npm start",
+    "cmd.exe: set STATIC_PROXY_URL=https://example-static-host/ && npm start"
+  ],
   "scripts": {
     "start": "node --max-http-header-size=81920 app.js"
   },
