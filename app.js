@@ -41,11 +41,12 @@ function getLocalIPAddress() {
 
 const localIP = getLocalIPAddress();
 
-// const CERT_DIR = process.env.CERT_DIR || path.resolve(__dirname, "pubkey");
+const CERT_DIR = process.env.CERT_DIR || path.resolve(__dirname, "pubkey");
+const STATIC_PROXY_URL = process.env.STATIC_PROXY_URL || "";
 
 const options = {
-  // key: fs.readFileSync(path.join(CERT_DIR, "key.pem")),
-  // cert: fs.readFileSync(path.join(CERT_DIR, "cert.pem")),
+  key: fs.readFileSync(path.join(CERT_DIR, "key.pem")),
+  cert: fs.readFileSync(path.join(CERT_DIR, "cert.pem")),
 };
 
 const server = https.createServer(options, app);
@@ -57,7 +58,7 @@ server.on("clientError", (err, socket) => {
 });
 
 const listener = server.listen(PORT, () => {
-  console.log(`🌐 Server is running!`);
+  console.log(`🌐 HTTPS Server is running!`);
   console.log(`📍 Local IP Address: ${localIP}`);
   console.log(`🔒 HTTPS running at https://${localIP}:${PORT}/`);
   console.log(`🔒 HTTPS running at https://${listener.address().address}:${listener.address().port}/...`);
@@ -74,6 +75,61 @@ const httpListener = httpServer.listen(HTTP_PORT, () => {
 const programList = {};
 const responseList = {};
 let idnum = 1;
+
+const apiPaths = new Set([
+  "/getid",
+  "/dataset",
+  "/startaccept",
+  "/smartview/dataget",
+  "/smartview/finishaccept",
+]);
+
+const staticProxyTarget = STATIC_PROXY_URL ? new URL(STATIC_PROXY_URL) : null;
+
+if (staticProxyTarget) {
+  console.log(`📦 Static requests are proxied to: ${staticProxyTarget.href}`);
+}
+
+function isApiRequest(req) {
+  return apiPaths.has(req.path);
+}
+
+function proxyStaticRequest(req, res, targetBaseUrl) {
+  const upstreamUrl = new URL(req.originalUrl, targetBaseUrl);
+  const httpClient = upstreamUrl.protocol === "https:" ? https : http;
+
+  const proxyReq = httpClient.request(
+    {
+      protocol: upstreamUrl.protocol,
+      hostname: upstreamUrl.hostname,
+      port: upstreamUrl.port,
+      method: req.method,
+      path: `${upstreamUrl.pathname}${upstreamUrl.search}`,
+      headers: {
+        ...req.headers,
+        host: upstreamUrl.host,
+      },
+    },
+    (proxyRes) => {
+      res.status(proxyRes.statusCode || 502);
+      Object.entries(proxyRes.headers).forEach(([name, value]) => {
+        if (value !== undefined) {
+          res.setHeader(name, value);
+        }
+      });
+      proxyRes.pipe(res);
+    }
+  );
+
+  proxyReq.on("error", (err) => {
+    console.error("Static reverse proxy error:", err.message);
+    if (!res.headersSent) {
+      res.status(502).json({ error: "Bad Gateway", detail: err.message });
+    }
+  });
+
+  req.pipe(proxyReq);
+}
 
 app.get("/getid", (req, res, next) => {
   let myid = 0;
@@ -112,6 +168,22 @@ app.post("/smartview/finishaccept", (req, res, next) => {
   res.json({ ok: true });
 });
 
+app.use((req, res, next) => {
+  if (!staticProxyTarget) {
+    next();
+    return;
+  }
+  if (req.method !== "GET" && req.method !== "HEAD") {
+    next();
+    return;
+  }
+  if (isApiRequest(req)) {
+    next();
+    return;
+  }
+
+  proxyStaticRequest(req, res, staticProxyTarget);
+});
 
 app.use((req, res) => {
   res.sendStatus(404);
