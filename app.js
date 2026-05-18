@@ -5,6 +5,8 @@ const cors = require("cors");
 const fs = require("fs");
 const http = require("http");
 const https = require("https");
+const net = require("net");
+const tls = require("tls");
 const os = require("os");
 
 const app = express();
@@ -131,6 +133,45 @@ function proxyStaticRequest(req, res, targetBaseUrl) {
   req.pipe(proxyReq);
 }
 
+function proxyWebSocket(req, socket, head, targetBaseUrl) {
+  const upstreamUrl = new URL(req.url, targetBaseUrl);
+  const isSecure = upstreamUrl.protocol === "https:" || upstreamUrl.protocol === "wss:";
+  const port = Number(upstreamUrl.port) || (isSecure ? 443 : 80);
+
+  const upstream = isSecure
+    ? tls.connect({ host: upstreamUrl.hostname, port, rejectUnauthorized: false })
+    : net.createConnection({ host: upstreamUrl.hostname, port });
+
+  const onConnect = () => {
+    const headerLines = [`${req.method} ${upstreamUrl.pathname}${upstreamUrl.search || ""} HTTP/1.1`];
+    for (const [key, val] of Object.entries(req.headers)) {
+      headerLines.push(key.toLowerCase() === "host" ? `host: ${upstreamUrl.host}` : `${key}: ${val}`);
+    }
+    headerLines.push("", "");
+    upstream.write(headerLines.join("\r\n"));
+    if (head && head.length) upstream.write(head);
+    upstream.pipe(socket);
+    socket.pipe(upstream);
+  };
+
+  upstream.on(isSecure ? "secureConnect" : "connect", onConnect);
+  upstream.on("error", (err) => {
+    console.error("WebSocket proxy error:", err.message);
+    socket.destroy();
+  });
+  socket.on("error", () => upstream.destroy());
+}
+
+function attachWebSocketProxy(srv) {
+  srv.on("upgrade", (req, socket, head) => {
+    if (staticProxyTarget && !isApiRequest(req)) {
+      proxyWebSocket(req, socket, head, staticProxyTarget);
+    } else {
+      socket.destroy();
+    }
+  });
+}
+
 app.get("/getid", (req, res, next) => {
   let myid = 0;
   myid = idnum++;
@@ -188,3 +229,6 @@ app.use((req, res, next) => {
 app.use((req, res) => {
   res.sendStatus(404);
 });
+
+attachWebSocketProxy(server);
+attachWebSocketProxy(httpServer);
